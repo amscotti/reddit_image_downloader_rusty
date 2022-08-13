@@ -1,0 +1,23 @@
+subreddits = [
+    "EarthPorn",
+    "Wallpapers",
+    "ServerPorn",
+    "unixporn",
+    "CoffeePorn",
+    "battlestations",
+    "Aww",
+    "Beerwithaview",
+    "OldSchoolCool",
+    "TheWayWeWere",
+    "SkyPorn",
+    "spaceporn",
+    "itookapicture",
+]
+
+download_path = "download"
+
+[file_ext]
+jpg = true
+png = true
+gif = true
+
