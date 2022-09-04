@@ -83,7 +83,6 @@ async fn download_subreddit_images(config: Config) {
     }
 }
 
-// tokio let's us use "async" on our main function
 #[tokio::main]
 async fn main() {
     let args = Args::parse();

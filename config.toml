@@ -12,6 +12,7 @@ subreddits = [
     "SkyPorn",
     "spaceporn",
     "itookapicture",
+    "pics"
 ]
 
 download_path = "download"

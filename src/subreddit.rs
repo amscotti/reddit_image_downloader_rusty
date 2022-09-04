@@ -21,7 +21,7 @@ pub struct Children {
     pub data: Data2,
 }
 
-#[derive(Default, Debug, Clone, PartialEq, Deserialize)]
+#[derive(Default, Debug, Clone, Eq, PartialEq, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Data2 {
     pub url: String,
