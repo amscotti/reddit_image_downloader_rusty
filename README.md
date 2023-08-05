@@ -4,7 +4,7 @@ This is a command line tool that uses a config file to download images from a li
 
 This is a Rust port of a [Go app](https://github.com/amscotti/reddit_image_downloader) used to help better understand Rust, and async using [Tokio](https://tokio.rs/)
 
-![output](https://github.com/amscotti/reddit_image_downloader_rusty/blob/main/screenshot.png?raw=true)
+[![asciicast](https://asciinema.org/a/tbsjBsJSwGlRDDiCOb3mi0SD0.svg)](https://asciinema.org/a/tbsjBsJSwGlRDDiCOb3mi0SD0)
 
 ## Building
 

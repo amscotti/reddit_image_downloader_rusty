@@ -28,11 +28,10 @@ struct Args {
 
 async fn download_subreddit_images(config: Config) {
     let m = MultiProgress::new();
-    let sty = ProgressStyle::with_template(
-        "{spinner:.green} {bar:50.green/green} {pos:>7}/{len:7} {msg}",
-    )
-    .unwrap()
-    .progress_chars("#>-");
+    let sty = ProgressStyle::default_bar()
+        .template("[{msg:20}] {bar:50.green/green.bold} [{pos:>3}/{len:3}]")
+        .unwrap()
+        .progress_chars("█░");
 
     let mut handles: Vec<JoinHandle<()>> = vec![];
     for subreddit in config.subreddits {
@@ -68,7 +67,6 @@ async fn download_subreddit_images(config: Config) {
                             _ = image.download().await;
                             pb.inc(1);
                         }
-                        pb.finish_with_message("Done");
                     }
                 }
                 Err(_) => println!("Unable to get file URLs for {}", subreddit.name),
