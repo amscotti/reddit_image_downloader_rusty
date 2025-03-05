@@ -17,6 +17,9 @@ subreddits = [
 
 download_path = "download"
 
+# Maximum number of concurrent downloads per subreddit
+concurrent_downloads = 5
+
 [file_ext]
 jpg = true
 png = true

@@ -1,6 +1,15 @@
-use std::{borrow::BorrowMut, error, fmt, io, path::PathBuf};
+use futures::StreamExt;
+use std::{error, fmt, io, path::PathBuf};
 use tokio::{fs, io::AsyncWriteExt};
 use reqwest::Client;
+
+// Static client to be reused across downloads
+static CLIENT: once_cell::sync::Lazy<Client> = once_cell::sync::Lazy::new(|| {
+    Client::builder()
+        .user_agent("reddit_image_downloader_rusty/0.1.0")
+        .build()
+        .expect("Failed to create HTTP client")
+});
 
 pub struct ImageFile {
     pub url: String,
@@ -38,8 +47,12 @@ impl From<io::Error> for DownloadError {
 
 impl ImageFile {
     pub async fn download(&self) -> Result<(), DownloadError> {
+        // Note: We assume parent directory is already created in main.rs
+        // But we check again here just to be safe
         if let Some(parent) = self.path.parent() {
-            fs::create_dir_all(parent).await?;
+            if !parent.exists() {
+                fs::create_dir_all(parent).await?;
+            }
         } else {
             return Err(DownloadError::IoError(io::Error::new(
                 io::ErrorKind::InvalidInput,
@@ -47,14 +60,27 @@ impl ImageFile {
             )));
         }
 
-        let client = Client::new();
-        let mut response = client.get(&self.url).send().await?;
+        // Use the static client instead of creating a new one for each download
+        let response = CLIENT.get(&self.url).send().await?;
+        
+        // Check for successful response
+        if !response.status().is_success() {
+            return Err(DownloadError::IoError(
+                io::Error::new(
+                    io::ErrorKind::Other, 
+                    format!("HTTP error: {}", response.status())
+                )
+            ));
+        }
 
         let mut file = fs::File::create(&self.path).await?;
-
-        while let Some(mut chunk) = response.chunk().await? {
-            let mut buffer = chunk.borrow_mut();
-            file.write_all_buf(&mut buffer).await?;
+        
+        // Use the stream API for efficient downloading
+        let mut stream = response.bytes_stream();
+        
+        while let Some(chunk_result) = stream.next().await {
+            let chunk = chunk_result?;
+            file.write_all(&chunk).await?;
         }
 
         Ok(())
